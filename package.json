@@ -1,0 +1,26 @@
+{
+  "name": "vmtp-users",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sls:package": "sls package -s dev",
+    "sls:deploy": "sls deploy -s dev",
+    "build": "tsc"
+  },
+  "author": "VM",
+  "license": "ISC",
+  "description": "Users starage & API",
+  "dependencies": {
+    "aws-lambda": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/node": "^22.9.1",
+    "serverless": "^4.4.10",
+    "serverless-plugin-dynamodb-autoscaling": "^3.1.1",
+    "serverless-plugin-git-variables": "^5.2.0",
+    "serverless-webpack": "^5.15.0",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,68 @@
+service: vmtp-users
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-west-1
+  stage: ${opt:stage, self:custom.defaultStage}
+  environment:
+    USERS_TABLE: ${self:custom.usersTableName}
+  httpApi:
+    cors: true
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.usersTableName}"
+plugins:
+- serverless-webpack
+- serverless-plugin-git-variables
+- serverless-plugin-dynamodb-autoscaling
+
+custom:
+  gitDescription: ${git:repository} - ${git:branch} - ${git:tags}
+  usersTableName: ${self:service}-users-${sls:stage}
+
+
+functions:
+
+  list:
+    handler: src/handlers.listUsers`
+    events:
+      - httpApi:
+          path: /items
+          method: list
+
+  get:
+    handler: src/handlers.getItem
+    events:
+      - httpApi:
+          path: /items/{id}
+          method: get
+
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.usersTableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 25 
+          WriteCapacityUnits: 25
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true

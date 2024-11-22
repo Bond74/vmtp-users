@@ -5,8 +5,10 @@ provider:
   runtime: nodejs20.x
   region: eu-west-1
   stage: ${opt:stage, self:custom.defaultStage}
+  deploymentBucket: vm-slsdeploymentbucket-${self:provider.region}
   environment:
     USERS_TABLE: ${self:custom.usersTableName}
+    REGION: ${self:provider.region}
   httpApi:
     cors: true
   iam:
@@ -22,31 +24,37 @@ provider:
             - dynamodb:DeleteItem
           Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.usersTableName}"
 plugins:
-- serverless-webpack
 - serverless-plugin-git-variables
 - serverless-plugin-dynamodb-autoscaling
+- serverless-prune-plugin
 
 custom:
   gitDescription: ${git:repository} - ${git:branch} - ${git:tags}
-  usersTableName: ${self:service}-users-${sls:stage}
+  usersTableName: ${self:service}-${sls:stage}
+  dynamodbAutoscaling:
+    tablesConfig:
+      usersTable:
+        table:
+          minCapacity: 10
+          maxCapacity: 1000
+          targetUsage: 0.5
 
 
 functions:
 
   list:
-    handler: src/handlers.listUsers`
+    handler: src/handlers.listUsers
     events:
       - httpApi:
-          path: /items
-          method: list
+          path: /users/list
+          method: get
 
   get:
     handler: src/handlers.getItem
     events:
       - httpApi:
-          path: /items/{id}
+          path: /users/get/{id}
           method: get
-
 
 resources:
   Resources:
@@ -61,8 +69,5 @@ resources:
           - AttributeName: id
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 25 
-          WriteCapacityUnits: 25
-        TimeToLiveSpecification:
-          AttributeName: ttl
-          Enabled: true
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10

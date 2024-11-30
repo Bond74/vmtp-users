@@ -6,7 +6,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "sls:package": "sls package -s dev",
     "sls:deploy": "sls deploy -s dev",
-    "build": "tsc"
+    "build": "tsc",
+    "tf:deploy-dev": "terraform -chdir=./deployment/envs/dev apply",
+    "tf:deploy-sit": "terraform -chdir=./deployment/envs/sit apply",
+    "tf:deploy-prod": "terraform -chdir=./deployment/envs/prod apply",
+    "tf:destroy-dev": "terraform -chdir=./deployment/envs/dev destroy",
+    "tf:destroy-sit": "terraform -chdir=./deployment/envs/sit destroy",
+    "tf:destroy-prod": "terraform -chdir=./deployment/envs/prod destroy"
   },
   "author": "VM",
   "license": "ISC",

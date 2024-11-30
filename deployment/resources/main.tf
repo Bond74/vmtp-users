@@ -1,6 +1,10 @@
-provider "aws" {
-    profile = "default"
-    region = var.aws_region
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 2.7.0"
+    }
+  }
 }
 
 # *******************************************
@@ -39,7 +43,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "deployment_bucket" {
 data "archive_file" "vmpt_users_code_package" {
   type = "zip"
 
-  source_dir  = "./dist"
+  source_dir  = "./../../../dist"
   output_path = "./.terraform/deploy/dist.zip"
 }
 

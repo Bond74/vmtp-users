@@ -1,5 +1,5 @@
 
-import { APIGatewayProxyEvent, APIGatewayProxyResult, SQSEvent } from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { DynamoDBClient, ScanCommand, ScanCommandInput } from "@aws-sdk/client-dynamodb";
 import { DEFAULT_REGION } from "./constants";
 import { VmtpRequestError } from "./types";
